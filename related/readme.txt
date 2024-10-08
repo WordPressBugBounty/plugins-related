@@ -3,7 +3,7 @@ Contributors: mpol
 Tags: related, related post, related posts, linked post, linked posts
 Requires at least: 4.1
 Tested up to: 6.6
-Stable tag: 3.4.0
+Stable tag: 3.4.1
 License: GPLv2 or later
 Requires PHP: 7.0
 
@@ -183,6 +183,13 @@ This plugin is not compatible with the Kleo theme.
 
 
 == Changelog ==
+
+= 3.4.1 =
+* 2024-10-07
+* Only load admin pages on dashboard, not frontend.
+* Loading plugin translations should be delayed until init action.
+* Check for direct access of files.
+* Use __DIR__ instead of dirname(__FILE__).
 
 = 3.4.0 =
 * 2023-03-24

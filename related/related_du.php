@@ -1,5 +1,9 @@
 <?php
 
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+
 if ( ! class_exists('Related_du')) {
 	class Related_du {
 
@@ -34,8 +38,8 @@ if ( ! class_exists('Related_du')) {
 		 * Defines a few static helper values we might need
 		 */
 		protected function define_constants() {
-			define('RELATED_DU_FILE', plugin_basename(dirname(__FILE__)));
-			define('RELATED_DU_ABSPATH', str_replace('\\', '/', WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__))));
+			define('RELATED_DU_FILE', plugin_basename( __DIR__ ));
+			define('RELATED_DU_ABSPATH', str_replace('\\', '/', WP_PLUGIN_DIR . '/' . plugin_basename( __DIR__ )));
 		}
 
 
@@ -404,7 +408,7 @@ function related_du_init() {
 	$related_double = get_option('related_double_plugin');
 	if ( $related_double === false ) { // never set...
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		$active = is_plugin_active( 'related/related_du.php' ); // true or false
+		$active = is_plugin_active( 'related/related_du.php' ); // bool; true or false
 		if ( $active ) {
 			update_option('related_double_plugin', 1);
 			deactivate_plugins( 'related/related_du.php' );
@@ -421,7 +425,9 @@ function related_du_init() {
 		$related_du = new Related_du();
 
 		/* Include Settings page */
-		require_once 'adminpages/page-related_du.php';
+		if ( is_admin() ) {
+			require_once 'adminpages/page-related_du.php';
+		}
 
 		/* Include widget */
 		require_once 'widgets/related_du-widget.php';

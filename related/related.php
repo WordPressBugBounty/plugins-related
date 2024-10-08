@@ -3,7 +3,7 @@
 Plugin Name: Manual Related Posts
 Plugin URI: https://wordpress.org/plugins/related/
 Description: A simple 'related posts' plugin that lets you select related posts manually.
-Version: 3.4.0
+Version: 3.4.1
 Author: Marcel Pol
 Author URI: https://timelord.nl
 Text Domain: related
@@ -11,7 +11,7 @@ Domain Path: /lang/
 
 
 Copyright 2010 - 2012  Matthias Siegel  (email: matthias.siegel@gmail.com)
-Copyright 2013 - 2023  Marcel Pol       (email: marcel@timelord.nl)
+Copyright 2013 - 2024  Marcel Pol       (email: marcel@timelord.nl)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -40,6 +40,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * - Add AJAX for metabox, so no more memory problems getting all posts.
  *
  */
+
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 
 if ( ! class_exists('Related')) {
 	class Related {
@@ -80,10 +84,10 @@ if ( ! class_exists('Related')) {
 		 * Defines a few static helper values we might need
 		 */
 		protected function define_constants() {
-			define('RELATED_VERSION', '3.4.0');
-			define('RELATED_FILE', plugin_basename(dirname(__FILE__)));
-			define('RELATED_ABSPATH', str_replace('\\', '/', WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__))));
-			define('RELATED_URLPATH', plugins_url() . '/' . plugin_basename(dirname(__FILE__)));
+			define('RELATED_VERSION', '3.4.1');
+			define('RELATED_FILE', plugin_basename( __DIR__ ));
+			define('RELATED_ABSPATH', str_replace('\\', '/', WP_PLUGIN_DIR . '/' . plugin_basename( __DIR__ )));
+			define('RELATED_URLPATH', plugins_url() . '/' . plugin_basename( __DIR__ ));
 		}
 
 
@@ -517,7 +521,7 @@ class Walker_RelatedDropdown extends Walker {
  *
  */
 function related_links( $links, $file ) {
-	if ( $file === plugin_basename( dirname(__FILE__) . '/related.php' ) ) {
+	if ( $file === plugin_basename( __DIR__ . '/related.php' ) ) {
 		$links[] = '<a href="' . esc_url( admin_url( 'options-general.php?page=related.php' ) ) . '">' . esc_html__( 'Settings', 'related' ) . '</a>';
 	}
 	return $links;
@@ -526,7 +530,9 @@ add_filter( 'plugin_action_links', 'related_links', 10, 2 );
 
 
 /* Include Settings page */
-require_once 'adminpages/page-related.php';
+if ( is_admin() ) {
+	require_once 'adminpages/page-related.php';
+}
 
 /* Include widget */
 require_once 'widgets/related-widget.php';
@@ -536,17 +542,24 @@ require_once 'related_du.php';
 
 
 /*
- * related_init
- * Function called at initialisation.
- * - Loads language files
- * - Make an instance of Related()
+ * Load language files
  */
+function related_load_plugin_textdomain() {
 
-function related_init() {
 	load_plugin_textdomain('related', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/');
+
+}
+add_action( 'init', 'related_load_plugin_textdomain' );
+
+
+/*
+ * Make an instance of Related()
+ */
+function related_init() {
 
 	// Start the plugin
 	global $related;
 	$related = new Related();
+
 }
-add_action('plugins_loaded', 'related_init');
+add_action( 'plugins_loaded', 'related_init' );

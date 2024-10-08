@@ -4,6 +4,8 @@
  */
 
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 
 /*
  * Adds an option page to Settings

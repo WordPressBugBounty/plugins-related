@@ -2,7 +2,7 @@
 Contributors: mpol
 Tags: related, related post, related posts, linked post, linked posts
 Requires at least: 4.1
-Tested up to: 6.6
+Tested up to: 6.7
 Stable tag: 3.4.1
 License: GPLv2 or later
 Requires PHP: 7.0

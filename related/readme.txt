@@ -3,7 +3,7 @@ Contributors: mpol
 Tags: related, related post, related posts, linked post, linked posts
 Requires at least: 4.1
 Tested up to: 6.7
-Stable tag: 3.4.1
+Stable tag: 3.5.0
 License: GPLv2 or later
 Requires PHP: 7.0
 
@@ -94,12 +94,13 @@ Here is an example:
 	<?php
 		global $related;
 		$rel = $related->show( get_the_ID(), true );
+		$statuses = related_get_public_statuses();
 
 		// Display the title of each related post
 		if( is_array( $rel ) && count( $rel ) > 0 ) {
 			foreach ( $rel as $r ) {
 				if ( is_object( $r ) ) {
-					if ($r->post_status != 'trash') {
+					if ( in_array( $r->post_status, $statuses ) ) {
 						echo get_the_title( $r->ID ) . '<br />';
 					}
 				}
@@ -115,12 +116,13 @@ But make sure you don't use the content filter for related posts, because you mi
 	<?php
 		global $related;
 		$rel = $related->show( get_the_ID(), true );
+		$statuses = related_get_public_statuses();
 
 		// Display the title and excerpt of each related post
 		if( is_array( $rel ) && count( $rel ) > 0 ) {
 			foreach ( $rel as $r ) {
 				if ( is_object( $r ) ) {
-					if ($r->post_status != 'trash') {
+					if ( in_array( $r->post_status, $statuses ) ) {
 						setup_postdata( $r );
 						echo get_the_title( $r->ID ) . '<br />';
 						the_excerpt();
@@ -183,6 +185,12 @@ This plugin is not compatible with the Kleo theme.
 
 
 == Changelog ==
+
+= 3.5.0 =
+* 2025-03-07
+* On the frontend, limit (or extend) the post status that is allowed.
+* Add function 'related_get_public_statuses'.
+* Add filter 'related_get_public_statuses'.
 
 = 3.4.1 =
 * 2024-10-07

@@ -3,7 +3,7 @@
 Plugin Name: Manual Related Posts
 Plugin URI: https://wordpress.org/plugins/related/
 Description: A simple 'related posts' plugin that lets you select related posts manually.
-Version: 3.4.1
+Version: 3.5.0
 Author: Marcel Pol
 Author URI: https://timelord.nl
 Text Domain: related
@@ -11,7 +11,7 @@ Domain Path: /lang/
 
 
 Copyright 2010 - 2012  Matthias Siegel  (email: matthias.siegel@gmail.com)
-Copyright 2013 - 2024  Marcel Pol       (email: marcel@timelord.nl)
+Copyright 2013 - 2025  Marcel Pol       (email: marcel@timelord.nl)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ if ( ! class_exists('Related')) {
 		 * Defines a few static helper values we might need
 		 */
 		protected function define_constants() {
-			define('RELATED_VERSION', '3.4.1');
+			define('RELATED_VERSION', '3.5.0');
 			define('RELATED_FILE', plugin_basename( __DIR__ ));
 			define('RELATED_ABSPATH', str_replace('\\', '/', WP_PLUGIN_DIR . '/' . plugin_basename( __DIR__ )));
 			define('RELATED_URLPATH', plugins_url() . '/' . plugin_basename( __DIR__ ));
@@ -197,6 +197,7 @@ if ( ! class_exists('Related')) {
 		public function display_metabox() {
 			global $post;
 			$post_id = $post->ID;
+			$statuses = related_get_public_statuses();
 
 			/* Nonce */
 			$nonce = wp_create_nonce( 'related_nonce' );
@@ -213,6 +214,7 @@ if ( ! class_exists('Related')) {
 					$p = get_post( (int) $r );
 
 					if ( is_object( $p ) ) {
+						// list all related posts in the metabox that were added in the past, except post_status trash.
 						if ($p->post_status !== 'trash') {
 							echo '
 								<div class="related-post" id="related-post-' . (int) $r . '">
@@ -236,7 +238,7 @@ if ( ! class_exists('Related')) {
 
 			echo '<option value="0"></option>';
 
-
+			// post_types.
 			$related_list = get_option('related_list');
 			$related_list = json_decode( $related_list );
 
@@ -266,14 +268,14 @@ if ( ! class_exists('Related')) {
 
 				/* Use suppress_filters to support WPML, only show posts in the right language. */
 				$query_args = array(
-					'nopaging' => true,
-					'posts_per_page' => 500,
-					'orderby' => $orderby,
-					'order' => $order,
-					'post_type' => $post_type,
+					'nopaging'         => true,
+					'posts_per_page'   => 500,
+					'orderby'          => $orderby,
+					'order'            => $order,
+					'post_type'        => $post_type,
 					'suppress_filters' => 0,
-					'post_status' => 'publish, inherit',
-					'exclude' => array( $post_id ),
+					'post_status'      => $statuses,
+					'exclude'          => array( $post_id ),
 				);
 
 				$posts = get_posts( $query_args );
@@ -310,6 +312,7 @@ if ( ! class_exists('Related')) {
 		public function show( $id, $return = false ) {
 
 			global $wpdb;
+			$statuses = related_get_public_statuses();
 
 			/* Compatibility for Qtranslate, Qtranslate-X and Qtranslate-XT, and the get_permalink function */
 			if ( function_exists( 'qtrans_convertURL' ) ) {
@@ -346,7 +349,7 @@ if ( ! class_exists('Related')) {
 						}
 						foreach ($rel as $r) {
 							if ( is_object( $r ) ) {
-								if ($r->post_status !== 'trash') {
+								if ( in_array( $r->post_status, $statuses ) ) {
 									if ( $extended_view ) {
 										$thumb_id = get_post_thumbnail_id($r->ID);
 										$tn_size = apply_filters( 'related_show_post_tn_size', 'medium' );
@@ -563,3 +566,39 @@ function related_init() {
 
 }
 add_action( 'plugins_loaded', 'related_init' );
+
+
+/*
+ * Return desired statuses for related posts for the current user on the frontend.
+ *
+ * @return array list of desired statuses.
+ *
+ * @since 3.5.0
+ */
+function related_get_public_statuses() {
+
+	$statuses = array();
+
+	$statuses[] = 'publish';
+
+	// Support Attachments as well. Revisions should not be a related post.
+	$statuses[] = 'inherit';
+
+	if ( current_user_can( 'edit_others_posts' ) ) {
+		$statuses[] = 'draft';
+	}
+
+	if ( current_user_can( 'publish_posts' ) ) {
+		$statuses[] = 'pending';
+	}
+
+	if ( current_user_can( 'read_private_posts' ) ) {
+		$statuses[] = 'private';
+	}
+
+	// remove built-in status or add your custom status.
+	$statuses = apply_filters( 'related_get_public_status', $statuses );
+
+	return $statuses;
+
+}

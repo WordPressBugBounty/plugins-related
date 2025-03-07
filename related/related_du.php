@@ -130,6 +130,7 @@ if ( ! class_exists('Related_du')) {
 		public function display_metabox() {
 			global $post;
 			$post_id = $post->ID;
+			$statuses = related_get_public_statuses();
 
 			/* Nonce */
 			$nonce = wp_create_nonce( 'related_du_nonce' );
@@ -146,6 +147,7 @@ if ( ! class_exists('Related_du')) {
 					$p = get_post( (int) $r );
 
 					if ( is_object( $p ) ) {
+						// list all related posts in the metabox that were added in the past, except post_status trash.
 						if ($p->post_status !== 'trash') {
 							echo '
 								<div class="related_du-post" id="related_du-post-' . (int) $r . '">
@@ -169,7 +171,7 @@ if ( ! class_exists('Related_du')) {
 
 			echo '<option value="0"></option>';
 
-
+			// post_types.
 			$related_list = get_option('related_du_list');
 			$related_list = json_decode( $related_list );
 
@@ -200,13 +202,13 @@ if ( ! class_exists('Related_du')) {
 				/* Use suppress_filters to support WPML, only show posts in the right language. */
 				$query_args = array(
 					'nopaging' => true,
-					'posts_per_page' => 500,
-					'orderby' => $orderby,
-					'order' => $order,
-					'post_type' => $post_type,
+					'posts_per_page'   => 500,
+					'orderby'          => $orderby,
+					'order'            => $order,
+					'post_type'        => $post_type,
 					'suppress_filters' => 0,
-					'post_status' => 'publish, inherit',
-					'exclude' => array( $post_id ),
+					'post_status'      => $statuses,
+					'exclude'          => array( $post_id ),
 				);
 
 				$posts = get_posts( $query_args );
@@ -243,6 +245,7 @@ if ( ! class_exists('Related_du')) {
 		public function show( $id, $return = false ) {
 
 			global $wpdb;
+			$statuses = related_get_public_statuses();
 
 			/* Compatibility for Qtranslate, Qtranslate-X and Qtranslate-XT, and the get_permalink function */
 			if ( function_exists( 'qtrans_convertURL' ) ) {
@@ -279,7 +282,7 @@ if ( ! class_exists('Related_du')) {
 						}
 						foreach ($rel as $r) {
 							if ( is_object( $r ) ) {
-								if ($r->post_status !== 'trash') {
+								if ( in_array( $r->post_status, $statuses ) ) {
 									if ( $extended_view ) {
 										$thumb_id = get_post_thumbnail_id($r->ID);
 										$tn_size = apply_filters( 'related_show_post_tn_size', 'medium' );

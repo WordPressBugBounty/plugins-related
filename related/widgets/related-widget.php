@@ -50,7 +50,7 @@ class Related_Widget extends WP_Widget {
 
 		$default_value = array( 'title' => esc_html__('Related Posts', 'related') );
 		$instance      = wp_parse_args( (array) $instance, $default_value );
-		$title = isset($instance['title']) ? esc_attr($instance['title']) : ''; ?>
+		$title         = isset($instance['title']) ? esc_attr($instance['title']) : ''; ?>
 
 		<p><label for="<?php echo esc_attr( $this->get_field_id('title') ); ?>"><?php esc_html_e('Title', 'related'); ?></label>
 		<input class="widefat" id="<?php echo esc_attr( $this->get_field_id('title') ); ?>" name="<?php echo esc_attr( $this->get_field_name('title') ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" /></p><?php

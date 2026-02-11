@@ -12,6 +12,9 @@ Domain Path: /lang/
 
 Copyright 2010 - 2012  Matthias Siegel  (email: matthias.siegel@gmail.com)
 Copyright 2013 - 2025  Marcel Pol       (email: marcel@timelord.nl)
+Copyright 2014         rembem
+Copyright 2017         benoitchantre
+
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

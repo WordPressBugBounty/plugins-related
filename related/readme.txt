@@ -1,8 +1,8 @@
 === Manual Related Posts ===
-Contributors: mpol
+Contributors: mpol, rembem, benoitchantre
 Tags: related, related post, related posts, linked post, linked posts
 Requires at least: 4.1
-Tested up to: 6.7
+Tested up to: 6.9
 Stable tag: 3.5.0
 License: GPLv2 or later
 Requires PHP: 7.0

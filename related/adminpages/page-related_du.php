@@ -28,7 +28,7 @@ function related_du_options_page() {
 			/* Check Nonce */
 			$verified = false;
 			if ( isset($_POST['related_show_nonce']) ) {
-				$verified = wp_verify_nonce( $_POST['related_show_nonce'], 'related_show_nonce' );
+				$verified = wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['related_show_nonce'] ) ), 'related_show_nonce' );
 			}
 			if ( $verified == false ) {
 				// Nonce is invalid.
@@ -42,7 +42,7 @@ function related_du_options_page() {
 					$showkeys[] = str_replace('show_', '', sanitize_text_field($key));
 				}
 				$showkeys = json_encode($showkeys);
-				update_option( 'related_du_show', $showkeys );
+				update_option( 'related_du_show', $showkeys, false );
 				echo '<div id="message" class="updated fade notice is-dismissible"><p>' . esc_html__('Settings updated successfully.', 'related') . '</p></div>';
 			}
 
@@ -52,7 +52,7 @@ function related_du_options_page() {
 			/* Check Nonce */
 			$verified = false;
 			if ( isset($_POST['related_list_nonce']) ) {
-				$verified = wp_verify_nonce( $_POST['related_list_nonce'], 'related_list_nonce' );
+				$verified = wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['related_list_nonce'] ) ), 'related_list_nonce' );
 			}
 			if ( $verified == false ) {
 				// Nonce is invalid.
@@ -66,7 +66,7 @@ function related_du_options_page() {
 					$listkeys[] = str_replace('list_', '', sanitize_text_field($key));
 				}
 				$listkeys = json_encode($listkeys);
-				update_option( 'related_du_list', $listkeys );
+				update_option( 'related_du_list', $listkeys, false );
 				echo '<div id="message" class="updated fade notice is-dismissible"><p>' . esc_html__('Settings updated successfully.', 'related') . '</p></div>';
 			}
 			$active_tab = 'related_list';
@@ -75,7 +75,7 @@ function related_du_options_page() {
 			/* Check Nonce */
 			$verified = false;
 			if ( isset($_POST['related_content_nonce']) ) {
-				$verified = wp_verify_nonce( $_POST['related_content_nonce'], 'related_content_nonce' );
+				$verified = wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['related_content_nonce'] ) ), 'related_content_nonce' );
 			}
 			if ( $verified == false ) {
 				// Nonce is invalid.
@@ -83,44 +83,44 @@ function related_du_options_page() {
 			} else {
 				if ( isset( $_POST['related_content'] ) ) {
 					if ($_POST['related_content'] === 'on') {
-						update_option('related_du_content', 1);
+						update_option( 'related_du_content', 1, true );
 					} else {
-						update_option('related_du_content', 0);
+						update_option( 'related_du_content', 0, true );
 					}
 				} else {
-					update_option('related_du_content', 0);
+					update_option( 'related_du_content', 0, true );
 				}
 				if ( isset( $_POST['related_du_content_all'] ) ) {
 					if ($_POST['related_du_content_all'] === 'on') {
-						update_option('related_du_content_all', 1);
+						update_option( 'related_du_content_all', 1, true );
 					} else {
-						update_option('related_du_content_all', 0);
+						update_option( 'related_du_content_all', 0, true );
 					}
 				} else {
-					update_option('related_du_content_all', 0);
+					update_option( 'related_du_content_all', 0, true );
 				}
 				if ( isset( $_POST['related_du_content_rss'] ) ) {
 					if ($_POST['related_du_content_rss'] === 'on') {
-						update_option('related_du_content_rss', 1);
+						update_option( 'related_du_content_rss', 1, true );
 					} else {
-						update_option('related_du_content_rss', 0);
+						update_option( 'related_du_content_rss', 0, true );
 					}
 				} else {
-					update_option('related_du_content_rss', 0);
+					update_option( 'related_du_content_rss', 0, true );
 				}
 				if ( isset( $_POST['related_du_content_title'] ) && $_POST['related_du_content_title'] !== '' ) {
-					update_option( 'related_du_content_title', sanitize_text_field($_POST['related_du_content_title']) );
+					update_option( 'related_du_content_title', sanitize_text_field($_POST['related_du_content_title']), true );
 				} else {
 					delete_option( 'related_du_content_title' );
 				}
 				if ( isset( $_POST['related_du_content_extended'] ) ) {
 					if ($_POST['related_du_content_extended'] === 'on') {
-						update_option('related_du_content_extended', 1);
+						update_option( 'related_du_content_extended', 1, true );
 					} else {
-						update_option('related_du_content_extended', 0);
+						update_option( 'related_du_content_extended', 0, true );
 					}
 				} else {
-					update_option('related_du_content_extended', 0);
+					update_option( 'related_du_content_extended', 0, true );
 				}
 				echo '<div id="message" class="updated fade notice is-dismissible"><p>' . esc_html__('Settings updated successfully.', 'related') . '</p></div>';
 			}
@@ -176,7 +176,9 @@ function related_du_options_page() {
 							$post_types = get_post_types( '', 'names' );
 							$checked = '';
 							foreach ( $post_types as $post_type ) {
-								if ( $post_type === 'revision' || $post_type === 'nav_menu_item' ) {
+								if ( $post_type === 'revision' || $post_type === 'nav_menu_item' || $post_type === 'custom_css' || $post_type === 'customize_changeset' || $post_type === 'oembed_cache' ||
+									$post_type === 'wp_block' || $post_type === 'wp_template' || $post_type === 'wp_template_part' || $post_type === 'wp_global_styles' || $post_type === 'wp_navigation' ||
+									$post_type === 'wp_font_family' || $post_type === 'wp_font_face' ) {
 									continue;
 								}
 
@@ -240,7 +242,9 @@ function related_du_options_page() {
 							<?php
 							$post_types = get_post_types( '', 'names' );
 							foreach ( $post_types as $post_type ) {
-								if ( $post_type === 'revision' || $post_type === 'nav_menu_item' ) {
+								if ( $post_type === 'revision' || $post_type === 'nav_menu_item' || $post_type === 'custom_css' || $post_type === 'customize_changeset' || $post_type === 'oembed_cache' ||
+									$post_type === 'wp_block' || $post_type === 'wp_template' || $post_type === 'wp_template_part' || $post_type === 'wp_global_styles' || $post_type === 'wp_navigation' ||
+									$post_type === 'wp_font_family' || $post_type === 'wp_font_face' ) {
 									continue;
 								}
 
@@ -252,7 +256,7 @@ function related_du_options_page() {
 								?>
 								<li><label for="list_<?php echo esc_attr( $post_type ); ?>">
 									<input name="list_<?php echo esc_attr( $post_type ); ?>" type="checkbox" id="list_<?php echo esc_attr( $post_type ); ?>" <?php echo $checked; ?>  />
-									<?php echo $post_type; ?>
+									<?php echo esc_attr( $post_type ); ?>
 								</label></li>
 								<?php
 								$checked = ''; // reset
@@ -326,3 +330,9 @@ function related_du_options_page() {
 	<?php
 }
 
+/*
+ * Add the options to WordPress if they don't exist.
+ * File only gets included if enabled in options.
+ */
+add_option( 'related_du_show', json_encode(array( 'post' )), '', false );
+add_option( 'related_du_list', json_encode(array( 'post' )), '', false );

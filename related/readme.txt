@@ -2,8 +2,8 @@
 Contributors: mpol, rembem, benoitchantre
 Tags: related, related post, related posts, linked post, linked posts
 Requires at least: 4.1
-Tested up to: 6.9
-Stable tag: 3.5.0
+Tested up to: 7.1
+Stable tag: 4.0.0
 License: GPLv2 or later
 Requires PHP: 7.0
 
@@ -185,6 +185,14 @@ This plugin is not compatible with the Kleo theme.
 
 
 == Changelog ==
+
+= 4.0.0 =
+* 2026-08-30
+* Update chosen.js to 3.1.4.
+* Verify Nonces correctly.
+* Filter more post types out of options.
+* Add uninstall.php for cleanup of options after uninstall.
+* Set autoload explicitly for options.
 
 = 3.5.0 =
 * 2025-03-07

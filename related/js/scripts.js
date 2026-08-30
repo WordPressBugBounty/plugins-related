@@ -8,7 +8,7 @@
  * On selection, add the post to the list in the metabox.
  */
 jQuery(document).ready(function($) {
-	jQuery('.related-posts-select').on('change', function() {
+	jQuery('.related-posts-select.chosen-select').on('change', function() {
 		var select    = jQuery(this),
 			container = jQuery('#related-posts'),
 			id        = select.val(),
@@ -73,12 +73,14 @@ jQuery(document).ready(function($) {
 /*
  * Use Chosen.js to limit the number of shown options in the select-box.
  */
-jQuery(document).ready(function($) {
-	jQuery('select.related-posts-select').chosen({
-		no_results_text: "Nothing found...",
-		allow_single_deselect: true,
-		search_contains: true,
-		width: "100%",
+document.addEventListener('DOMContentLoaded', function () {
+	document.querySelectorAll( 'select.related-posts-select' ).forEach( element => {
+		element.chosen({
+			no_results_text: "nothing found...",
+			allow_single_deselect: true,
+			search_contains: true,
+			width: "100%",
+		});
 	});
 });
 

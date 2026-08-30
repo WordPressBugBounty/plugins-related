@@ -39,7 +39,6 @@ if ( ! class_exists('Related_du')) {
 		 */
 		protected function define_constants() {
 			define('RELATED_DU_FILE', plugin_basename( __DIR__ ));
-			define('RELATED_DU_ABSPATH', str_replace('\\', '/', WP_PLUGIN_DIR . '/' . plugin_basename( __DIR__ )));
 		}
 
 
@@ -98,7 +97,7 @@ if ( ! class_exists('Related_du')) {
 			/* Check Nonce */
 			$verified = false;
 			if ( isset($_POST['related_du_nonce']) ) {
-				$verified = wp_verify_nonce( $_POST['related_du_nonce'], 'related_du_nonce' );
+				$verified = wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['related_du_nonce'] ) ), 'related_du_nonce' );
 			}
 			if ( $verified == false ) {
 				// Nonce is invalid.
@@ -413,10 +412,10 @@ function related_du_init() {
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		$active = is_plugin_active( 'related/related_du.php' ); // bool; true or false
 		if ( $active ) {
-			update_option('related_double_plugin', 1);
+			update_option( 'related_double_plugin', 1, true );
 			deactivate_plugins( 'related/related_du.php' );
 		} else {
-			update_option('related_double_plugin', 0);
+			update_option( 'related_double_plugin', 0, true );
 		}
 	}
 

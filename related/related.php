@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: Manual Related Posts
-Plugin URI: https://wordpress.org/plugins/related/
+Plugin URI: https://timelord.nl
 Description: A simple 'related posts' plugin that lets you select related posts manually.
-Version: 3.5.0
+Version: 4.0.0
 Author: Marcel Pol
 Author URI: https://timelord.nl
 Text Domain: related
@@ -11,7 +11,7 @@ Domain Path: /lang/
 
 
 Copyright 2010 - 2012  Matthias Siegel  (email: matthias.siegel@gmail.com)
-Copyright 2013 - 2025  Marcel Pol       (email: marcel@timelord.nl)
+Copyright 2013 - 2026  Marcel Pol       (email: marcel@timelord.nl)
 Copyright 2014         rembem
 Copyright 2017         benoitchantre
 
@@ -87,9 +87,9 @@ if ( ! class_exists('Related')) {
 		 * Defines a few static helper values we might need
 		 */
 		protected function define_constants() {
-			define('RELATED_VERSION', '3.5.0');
+			define('RELATED_VERSION', '4.0.0');
 			define('RELATED_FILE', plugin_basename( __DIR__ ));
-			define('RELATED_ABSPATH', str_replace('\\', '/', WP_PLUGIN_DIR . '/' . plugin_basename( __DIR__ )));
+			define('RELATED_ABSPATH', plugin_dir_path( __FILE__ ));
 			define('RELATED_URLPATH', plugins_url() . '/' . plugin_basename( __DIR__ ));
 		}
 
@@ -129,7 +129,7 @@ if ( ! class_exists('Related')) {
 			wp_enqueue_script('jquery-ui-core');
 			wp_enqueue_script('jquery-ui-sortable');
 			wp_enqueue_script('related-scripts', RELATED_URLPATH . '/js/scripts.js', false, RELATED_VERSION, true);
-			wp_enqueue_script('related-chosen', RELATED_URLPATH . '/chosen/chosen.jquery.js', false, RELATED_VERSION, true);
+			wp_enqueue_script('related-chosen', RELATED_URLPATH . '/chosen/chosen.js', false, RELATED_VERSION, true);
 		}
 
 
@@ -138,7 +138,7 @@ if ( ! class_exists('Related')) {
 		 */
 		public function admin_css() {
 			wp_enqueue_style('related-admin-css', RELATED_URLPATH . '/css/admin-style.css', false, RELATED_VERSION, 'all');
-			wp_enqueue_style('related-chosen-css', RELATED_URLPATH . '/chosen/chosen.min.css', false, RELATED_VERSION, 'all');
+			wp_enqueue_style('related-chosen-css', RELATED_URLPATH . '/chosen/chosen.css', false, RELATED_VERSION, 'all');
 		}
 
 
@@ -168,7 +168,7 @@ if ( ! class_exists('Related')) {
 			/* Check Nonce */
 			$verified = false;
 			if ( isset($_POST['related_nonce']) ) {
-				$verified = wp_verify_nonce( $_POST['related_nonce'], 'related_nonce' );
+				$verified = wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['related_nonce'] ) ), 'related_nonce' );
 			}
 			if ( $verified == false ) {
 				// Nonce is invalid.
